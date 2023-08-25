@@ -53,4 +53,19 @@ public class CategoryController : ControllerBase
         
         return Ok(category);
     }
+
+    [HttpDelete("/v1/categories/{id:int}")]
+    public async Task<IActionResult> DeleteAsync(int id,
+        [FromServices] BlogDataContext context)
+    {
+        var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        if (category == null)
+        {
+            return NotFound();
+        }
+
+        context.Categories.Remove(category);
+        await context.SaveChangesAsync();
+        return Ok(category);
+    }
 }
