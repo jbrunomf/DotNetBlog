@@ -37,4 +37,20 @@ public class CategoryController : ControllerBase
         await context.SaveChangesAsync();
         return Created($"v1/categories/{category.Id}", category);
     }
+
+    [HttpPut("/v1/categories/{id:int}")]
+    public async Task<IActionResult> PutAsync([FromRoute] int id,
+        [FromBody] Category model,
+        [FromServices] BlogDataContext context)
+    {
+        var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        
+        if (category == null) return NotFound();
+        
+        category.Name = model.Name;
+        context.Categories.Update(category);
+        await context.SaveChangesAsync();
+        
+        return Ok(category);
+    }
 }
