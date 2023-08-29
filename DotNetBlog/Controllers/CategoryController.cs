@@ -1,5 +1,6 @@
 ﻿using Blog.Data;
 using Blog.Models;
+using DotNetBlog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -10,7 +11,7 @@ namespace DotNetBlog.Controllers;
 public class CategoryController : ControllerBase
 {
     [HttpGet("/v1/categories")]
-    public async Task<IActionResult> Index([FromServices]BlogDataContext context)
+    public async Task<IActionResult> Index([FromServices] BlogDataContext context)
     {
         try
         {
@@ -44,11 +45,18 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("/v1/categories")]
-    public async Task<IActionResult> PostAsync([FromBody] Category category,
+    public async Task<IActionResult> PostAsync([FromBody] CreateCategoryViewModel model,
         [FromServices] BlogDataContext context)
     {
         try
         {
+            var category = new Category
+            {
+                Id = 0,
+                Name = model.Name,
+                Slug = model.Slug
+            };
+
             await context.Categories.AddAsync(category);
             await context.SaveChangesAsync();
             return Created($"v1/categories/{category.Id}", category);
@@ -57,10 +65,10 @@ public class CategoryController : ControllerBase
         {
             return StatusCode(500, "Não foi possível incluir a categoria.");
         }
-    catch (Exception e)
-    {
-        return StatusCode(500, "Falha interna no servidor.");
-    }
+        catch (Exception e)
+        {
+            return StatusCode(500, "Falha interna no servidor.");
+        }
     }
 
     [HttpPut("/v1/categories/{id:int}")]
