@@ -73,7 +73,7 @@ public class CategoryController : ControllerBase
 
     [HttpPut("/v1/categories/{id:int}")]
     public async Task<IActionResult> PutAsync([FromRoute] int id,
-        [FromBody] Category model,
+        [FromBody] UpdateCategoryViewModel model,
         [FromServices] BlogDataContext context)
     {
         try
@@ -83,6 +83,8 @@ public class CategoryController : ControllerBase
             if (category == null) return NotFound();
 
             category.Name = model.Name;
+            category.Slug = model.Slug;
+            category.Posts = model.Posts;
             context.Categories.Update(category);
             await context.SaveChangesAsync();
 
