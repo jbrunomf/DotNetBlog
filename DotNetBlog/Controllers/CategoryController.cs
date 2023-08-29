@@ -19,8 +19,7 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return BadRequest("Falha interna no servidor.");
         }
     }
 
@@ -40,8 +39,7 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return BadRequest("Falha interna no servidor.");
         }
     }
 
@@ -55,11 +53,14 @@ public class CategoryController : ControllerBase
             await context.SaveChangesAsync();
             return Created($"v1/categories/{category.Id}", category);
         }
-        catch (Exception e)
+        catch (DbUpdateException e)
         {
-            Console.WriteLine(e);
-            throw;
+            return StatusCode(500, "Não foi possível incluir a categoria.");
         }
+    catch (Exception e)
+    {
+        return StatusCode(500, "Falha interna no servidor.");
+    }
     }
 
     [HttpPut("/v1/categories/{id:int}")]
@@ -81,8 +82,7 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return BadRequest("Falha interna no servidor.");
         }
     }
 
@@ -104,8 +104,7 @@ public class CategoryController : ControllerBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return BadRequest("Falha interna do servidor");
         }
     }
 }
