@@ -45,7 +45,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("/v1/categories")]
-    public async Task<IActionResult> PostAsync([FromBody] CreateCategoryViewModel model,
+    public async Task<IActionResult> PostAsync([FromBody] EditorCategoryViewModel model,
         [FromServices] BlogDataContext context)
     {
         try
@@ -73,7 +73,7 @@ public class CategoryController : ControllerBase
 
     [HttpPut("/v1/categories/{id:int}")]
     public async Task<IActionResult> PutAsync([FromRoute] int id,
-        [FromBody] UpdateCategoryViewModel model,
+        [FromBody] EditorCategoryViewModel model,
         [FromServices] BlogDataContext context)
     {
         try
@@ -84,7 +84,6 @@ public class CategoryController : ControllerBase
 
             category.Name = model.Name;
             category.Slug = model.Slug;
-            category.Posts = model.Posts;
             context.Categories.Update(category);
             await context.SaveChangesAsync();
 
