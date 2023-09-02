@@ -1,5 +1,6 @@
 ﻿using Blog.Data;
 using Blog.Models;
+using DotNetBlog.ExtensionMethods;
 using DotNetBlog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,11 +37,11 @@ public class CategoryController : ControllerBase
                 return NotFound();
             }
 
-            return Ok(category);
+            return Ok(new ResultViewModel<Category>(category));
         }
         catch (Exception e)
         {
-            return BadRequest("Falha interna no servidor.");
+            return BadRequest(new ResultViewModel<string>("Erro ao obter categoria."));
         }
     }
 
@@ -48,6 +49,10 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> PostAsync([FromBody] EditorCategoryViewModel model,
         [FromServices] BlogDataContext context)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ResultViewModel<List<string>>(ModelState.GetErrors()));
+        }
         try
         {
             var category = new Category
@@ -63,11 +68,11 @@ public class CategoryController : ControllerBase
         }
         catch (DbUpdateException e)
         {
-            return StatusCode(500, "Não foi possível incluir a categoria.");
+            return StatusCode(500, new ResultViewModel<string>("Não foi possível incluir a categoria."));
         }
         catch (Exception e)
         {
-            return StatusCode(500, "Falha interna no servidor.");
+            return StatusCode(500, new ResultViewModel<string>("Falha interna no servidor."));
         }
     }
 
@@ -80,18 +85,18 @@ public class CategoryController : ControllerBase
         {
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
 
-            if (category == null) return NotFound();
+            if (category == null) return NotFound(new ResultViewModel<string>("Categoria não encontrada."));
 
             category.Name = model.Name;
             category.Slug = model.Slug;
             context.Categories.Update(category);
             await context.SaveChangesAsync();
 
-            return Ok(category);
+            return Ok(new ResultViewModel<Category>(category));
         }
         catch (Exception e)
         {
-            return BadRequest("Falha interna no servidor.");
+            return BadRequest(new ResultViewModel<string>("Falha interna no servidor."));
         }
     }
 
@@ -109,11 +114,11 @@ public class CategoryController : ControllerBase
 
             context.Categories.Remove(category);
             await context.SaveChangesAsync();
-            return Ok(category);
+            return Ok(new ResultViewModel<Category>(category));
         }
         catch (Exception e)
         {
-            return BadRequest("Falha interna do servidor");
+            return BadRequest(new ResultViewModel<string>("Falha interna do servidor"));
         }
     }
 }
