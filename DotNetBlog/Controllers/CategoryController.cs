@@ -11,16 +11,16 @@ namespace DotNetBlog.Controllers;
 public class CategoryController : ControllerBase
 {
     [HttpGet("/v1/categories")]
-    public async Task<IActionResult> Index([FromServices] BlogDataContext context)
+    public async Task<IActionResult> GetAsync([FromServices] BlogDataContext context)
     {
         try
         {
             var categories = await context.Categories.ToListAsync();
-            return Ok(categories);
+            return Ok(new ResultViewModel<List<Category>>(categories));
         }
         catch (Exception e)
         {
-            return BadRequest("Falha interna no servidor.");
+            return StatusCode(500, new ResultViewModel<string>("Erro ao obter categorias."));
         }
     }
 
