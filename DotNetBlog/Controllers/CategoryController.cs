@@ -109,7 +109,7 @@ public class CategoryController : ControllerBase
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
             {
-                return NotFound();
+                return NotFound(new ResultViewModel<string>("Categoria não encontrada."));
             }
 
             context.Categories.Remove(category);
