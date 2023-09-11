@@ -53,6 +53,7 @@ public class CategoryController : ControllerBase
         {
             return BadRequest(new ResultViewModel<List<string>>(ModelState.GetErrors()));
         }
+
         try
         {
             var category = new Category
