@@ -1,10 +1,11 @@
 using Blog.Data;
+using DotNetBlog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -16,6 +17,9 @@ builder.Services
         options.SuppressModelStateInvalidFilter = true;
     });
 builder.Services.AddDbContext<BlogDataContext>();
+
+//DI
+builder.Services.AddScoped(typeof(TokenService));
 
 var app = builder.Build();
 
