@@ -1,7 +1,28 @@
+using System.Text;
 using Blog.Data;
+using DotNetBlog;
 using DotNetBlog.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -30,6 +51,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
