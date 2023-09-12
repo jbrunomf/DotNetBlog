@@ -1,4 +1,8 @@
-﻿using DotNetBlog.Services;
+﻿using Blog.Data;
+using Blog.Models;
+using DotNetBlog.ExtensionMethods;
+using DotNetBlog.Services;
+using DotNetBlog.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,24 +19,22 @@ public class AccountController : ControllerBase
         return Ok(token);
     }
 
-    [Authorize(Roles = "user")]
-    [HttpGet("user")]
-    public IActionResult Getuser()
+    [HttpPost("v1/accounts")]
+    public async Task<IActionResult> Post(
+        [FromBody] RegisterViewModel model,
+        [FromServices] BlogDataContext context)
     {
-        return Ok(User.Identity.Name);
-    }
-
-    [Authorize(Roles = "author")]
-    [HttpGet("author")]
-    public IActionResult GetAuthor()
-    {
-        return Ok(User.Identity.Name);
-    }
-
-    [Authorize(Roles = "admin")]
-    [HttpGet("admin")]
-    public IActionResult GetAdmin()
-    {
-        return Ok(User.Identity.Name);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+        }
+        
+    //     var user = new User
+    //     {
+    //         Name = model.Name,
+    //         Email = model.Email,
+    //         Roles =
+    //     }
+    return Ok();
     }
 }
