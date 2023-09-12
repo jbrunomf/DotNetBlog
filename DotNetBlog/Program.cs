@@ -17,9 +17,8 @@ builder.Services
         options.SuppressModelStateInvalidFilter = true;
     });
 builder.Services.AddDbContext<BlogDataContext>();
-
 //DI
-builder.Services.AddScoped(typeof(TokenService));
+builder.Services.AddTransient<TokenService>();
 
 var app = builder.Build();
 
