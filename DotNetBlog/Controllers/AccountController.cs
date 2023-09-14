@@ -15,10 +15,40 @@ namespace DotNetBlog.Controllers;
 public class AccountController : ControllerBase
 {
     [HttpPost("login")]
-    public IActionResult Login([FromServices] TokenService tokenService)
+    public async Task<IActionResult> Login([FromBody] LoginViewModel model,
+        [FromServices] BlogDataContext context,
+        [FromServices] TokenService tokenService)
     {
-        var token = tokenService.GenerateToken(null);
-        return Ok(token);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+        }
+
+        var user = await context
+            .Users
+            .AsNoTracking()
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(x => x.Email == model.Email);
+
+        if (user == null)
+        {
+            return StatusCode(401, new ResultViewModel<string>("Usuário inexistente."));
+        }
+
+        if (!PasswordHasher.Verify(user.PasswordHash, model.Senha))
+        {
+            return BadRequest("Usuário / senha inválido(s).");
+        }
+
+        try
+        {
+            var token = tokenService.GenerateToken(user);
+            return Ok(new ResultViewModel<string>(token, null));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("Falha interna do servidor."));
+        }
     }
 
     [HttpPost("accounts")]
@@ -47,7 +77,7 @@ public class AccountController : ControllerBase
             return Ok(new ResultViewModel<dynamic>(new
             {
                 user = user.Email,
-                password
+                password,
             }));
         }
         catch (DbUpdateException)
@@ -58,6 +88,5 @@ public class AccountController : ControllerBase
         {
             return StatusCode(500, new ResultViewModel<string>("Falha ao cadastrar usuário."));
         }
-        
     }
 }
