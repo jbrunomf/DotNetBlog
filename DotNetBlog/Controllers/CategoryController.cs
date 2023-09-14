@@ -2,6 +2,7 @@
 using Blog.Models;
 using DotNetBlog.ExtensionMethods;
 using DotNetBlog.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -11,6 +12,7 @@ namespace DotNetBlog.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
+    [Authorize]
     [HttpGet("/v1/categories")]
     public async Task<IActionResult> GetAsync([FromServices] BlogDataContext context)
     {
