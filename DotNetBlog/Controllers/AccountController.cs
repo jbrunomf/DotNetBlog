@@ -54,7 +54,8 @@ public class AccountController : ControllerBase
     [HttpPost("accounts")]
     public async Task<IActionResult> Post(
         [FromBody] RegisterViewModel model,
-        [FromServices] BlogDataContext context)
+        [FromServices] BlogDataContext context,
+        [FromServices] EmailService emailService)
     {
         if (!ModelState.IsValid)
         {
@@ -74,6 +75,14 @@ public class AccountController : ControllerBase
         {
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
+            emailService.Send(
+                user.Name,
+                user.Email,
+                "Sua conta foi criada!",
+                "Bem vindo a JBSoft.",
+                "JBSoft",
+                "teste@envioemail.com");
+            
             return Ok(new ResultViewModel<dynamic>(new
             {
                 user = user.Email,
