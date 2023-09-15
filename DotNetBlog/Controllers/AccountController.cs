@@ -1,4 +1,5 @@
-﻿using DotNetBlog.Data;
+﻿using System.Text.RegularExpressions;
+using DotNetBlog.Data;
 using DotNetBlog.ExtensionMethods;
 using DotNetBlog.Models;
 using DotNetBlog.Services;
@@ -82,7 +83,7 @@ public class AccountController : ControllerBase
                 "Bem vindo a JBSoft.",
                 "JBSoft",
                 "teste@envioemail.com");
-            
+
             return Ok(new ResultViewModel<dynamic>(new
             {
                 user = user.Email,
@@ -97,5 +98,33 @@ public class AccountController : ControllerBase
         {
             return StatusCode(500, new ResultViewModel<string>("Falha ao cadastrar usuário."));
         }
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> UploadImage([FromBody] UploadImageViewModel model,
+        [FromServices] BlogDataContext context)
+    {
+        var fileName = $"{Guid.NewGuid().ToString()}.jpg";
+        var data = new Regex(@"data:image[a-z]+;base64,").Replace(model.Base64Image, "");
+        var bytes = Convert.FromBase64String(data);
+
+        try
+        {
+            await System.IO.File.WriteAllBytesAsync($"wwwroot/images/{fileName}", bytes);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new ResultViewModel<string>("Erro ao salvar imagem. Tente novamente."));
+        }
+
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
+
+        if (user == null)
+        {
+            return NotFound(new ResultViewModel<string>("Falha interna no servidor."));
+        }
+
+        return Ok(new ResultViewModel<string>("Imagem alterada com sucesso"));
     }
 }
