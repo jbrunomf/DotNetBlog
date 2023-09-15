@@ -1,8 +1,9 @@
-﻿using Blog.Data;
-using Blog.Models;
+﻿using DotNetBlog.Data;
 using DotNetBlog.ExtensionMethods;
+using DotNetBlog.Models;
 using DotNetBlog.Services;
 using DotNetBlog.ViewModels;
+using DotNetBlog.ViewModels.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

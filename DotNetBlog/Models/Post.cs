@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-namespace Blog.Models
+namespace DotNetBlog.Models
 {
     public class Post
     {

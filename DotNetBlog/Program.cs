@@ -1,6 +1,6 @@
 using System.Text;
-using Blog.Data;
 using DotNetBlog;
+using DotNetBlog.Data;
 using DotNetBlog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

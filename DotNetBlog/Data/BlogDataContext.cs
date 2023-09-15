@@ -1,8 +1,8 @@
-using Blog.Data.Mappings;
-using Blog.Models;
+using DotNetBlog.Data.Mappings;
+using DotNetBlog.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blog.Data
+namespace DotNetBlog.Data
 {
     public class BlogDataContext : DbContext
     {
