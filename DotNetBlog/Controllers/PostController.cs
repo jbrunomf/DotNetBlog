@@ -79,7 +79,7 @@ public class PostController : ControllerBase
         }
     }
 
-    [HttpGet("v1/posts/category/{category")]
+    [HttpGet("v1/posts/category/{category}")]
     public async Task<IActionResult> GetByCategoryAsync([FromRoute]string category,
         [FromServices]BlogDataContext context,
         [FromQuery]int page = 0,
@@ -115,7 +115,7 @@ public class PostController : ControllerBase
         }
         catch (Exception e)
         {
-            return StatusCode(500, new ResultViewModel<string>("Erro ao realizar operação."))
+            return StatusCode(500, new ResultViewModel<string>("Erro ao realizar operação."));
         }
     }
 }
