@@ -7,19 +7,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DotNetBlog.Controllers;
 
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    [Authorize]
-    [HttpGet("/v1/categories")]
-    public async Task<IActionResult> GetAsync([FromServices] BlogDataContext context)
+    // [Authorize]
+    [HttpGet("v1/categories")]
+    public IActionResult GetAsync(
+        [FromServices] BlogDataContext context,
+        [FromServices] IMemoryCache cache)
     {
         try
         {
-            var categories = await context.Categories.ToListAsync();
+            var categories = cache.GetOrCreate("CategoriesCache", entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                return GetCategories(context);
+            });
             return Ok(new ResultViewModel<List<Category>>(categories));
         }
         catch (Exception e)
@@ -28,7 +35,12 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpGet("/v1/categories/{id:int}")]
+    private List<Category> GetCategories(BlogDataContext context)
+    {
+        return context.Categories.ToList();
+    }
+
+    [HttpGet("v1/categories/{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id,
         [FromServices] BlogDataContext context)
     {
@@ -48,7 +60,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpPost("/v1/categories")]
+    [HttpPost("v1/categories")]
     public async Task<IActionResult> PostAsync([FromBody] EditorCategoryViewModel model,
         [FromServices] BlogDataContext context)
     {
@@ -80,7 +92,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpPut("/v1/categories/{id:int}")]
+    [HttpPut("v1/categories/{id:int}")]
     public async Task<IActionResult> PutAsync([FromRoute] int id,
         [FromBody] EditorCategoryViewModel model,
         [FromServices] BlogDataContext context)
@@ -104,7 +116,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpDelete("/v1/categories/{id:int}")]
+    [HttpDelete("v1/categories/{id:int}")]
     public async Task<IActionResult> DeleteAsync(int id,
         [FromServices] BlogDataContext context)
     {
