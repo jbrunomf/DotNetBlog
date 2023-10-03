@@ -115,8 +115,7 @@ public class PostController : ControllerBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return StatusCode(500, new ResultViewModel<string>("Erro ao realizar operação."))
         }
     }
 }
